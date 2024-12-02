@@ -18,10 +18,14 @@
 	end(partOneAns, 2);
 	end(partTwoAns, 4);
 
-	function reportIsSafe(report) {
+	function reportIsSafe(report, start) {
+		if (!(typeof start === 'number' && start >= 0)) {
+			throw new Error('start is missing or less than 0');
+		}
+
 		const levelsMustBeIncreasing = report[0] < report[1];
 
-		for (let i = 0; i < report.length - 1; ) {
+		for (let i = start; i < report.length - 1; ) {
 			const currentLevel = report[i];
 			const nextLevel = report[++i];
 			let diff = nextLevel - currentLevel;
@@ -31,7 +35,7 @@
 			}
 
 			if (!(diff >= 1 && diff <= 3)) {
-				return false;
+				return i;
 			}
 		}
 
@@ -39,22 +43,81 @@
 	}
 
 	function processPartOneReport(report) {
-		return reportIsSafe(report) ? 1 : 0;
+		return reportIsSafe(report, 0) === true ? 1 : 0;
 	}
 
 	function processPartTwoReport(report) {
-		// remove at most one level to make a report safe - no need to specifically see if the report is fine without needing to remove
-		// there should be a way to optimise this, but trying to is too complex, so this'll do
+		// remove at most one level to make a report safe
 
-		for (let i = 0; i < report.length; i++) {
-			const removed = report.splice(i, 1);
+		const useSlowSolutionThatWorks = true;
 
-			if (reportIsSafe(report)) {
-				return 1;
+		if (useSlowSolutionThatWorks) {
+			for (let i = 0; i < report.length; i++) {
+				const removed = report.splice(i, 1)[0];
+
+				if (reportIsSafe(report, 0) === true) {
+					return 1;
+				}
+
+				report.splice(i, 0, removed);
 			}
 
-			report.splice(i, 0, removed);
+			return 0;
 		}
+
+		// FIXME there's a logic error somewhere in this which gives the incorrect answer when ran against my actual input
+
+		const failIndex = reportIsSafe(report, 0);
+
+		if (failIndex === true) {
+			// console.log('passed first time');
+			return 1;
+		}
+
+		const startIndex = (() => {
+			let i = failIndex - 2;
+
+			while (i < 0) {
+				i++;
+			}
+	
+			return i;
+		})();
+
+		console.log('\nreport', JSON.stringify(report));
+		console.log('failIndex', failIndex);
+		console.log('startIndex', startIndex);
+
+		const aIndex = failIndex - 1;
+		const a = report.splice(aIndex, 1)[0];
+
+		console.log('removed', a, 'from index', aIndex);
+		console.log('report is now', JSON.stringify(report));
+
+		if (startIndex < 0) {
+			startIndex++;
+		}
+
+		if (reportIsSafe(report, startIndex) === true) {
+			console.log('passed second time');
+			return 1;
+		}
+
+		report.splice(aIndex, 0, a);
+		console.log('unremoved', a);
+		console.log('(report is now', JSON.stringify(report) + ')');
+
+		const bIndex = failIndex;
+		const b = report.splice(bIndex, 1)[0];
+		console.log('removed', b, 'from index', bIndex);
+		console.log('report is now', JSON.stringify(report));
+
+		if (reportIsSafe(report, startIndex) === true) {
+			console.log('passed third time');
+			return 1;
+		}
+
+		console.log('failed');
 
 		return 0;
 	}
