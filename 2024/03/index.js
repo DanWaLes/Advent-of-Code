@@ -8,7 +8,7 @@
 	const mulRe = /mul\((\d+)\,(\d+)\)/;
 
 	function doMul(mul) {
-		return mul.match(mulRe).map((str) => Number(str)).reduce((a, b) => (a || 1) * b);
+		return mul.match(mulRe).map((str) => Number(str)).reduce((a, b) => ((isNaN(a) && 1) || a) * b);
 	}
 
 	const partOneAns = ((input.match(new RegExp(mulRe, 'g')) || []).map((mul) => doMul(mul))).reduce((a, b) => a + b);
