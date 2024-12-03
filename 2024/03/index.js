@@ -1,14 +1,14 @@
 (async () => {
 	const fs = require('fs/promises');
 
-	const usingExampleInput = false;
+	const usingExampleInput = true;
 	const inputFileName = (usingExampleInput ? 'example_' : '') + 'input.txt';
 	const input = await fs.readFile(inputFileName, {encoding: 'utf8'});
 
 	const mulRe = /mul\((\d+)\,(\d+)\)/;
 
 	function doMul(mul) {
-		return mul.match(mulRe).map((str) => Number(str)).filter((a) => !isNaN(a)).reduce((a, b) => a * b);
+		return mul.match(mulRe).map((str) => Number(str)).reduce((a, b) => (a || 1) * b);
 	}
 
 	const partOneAns = ((input.match(new RegExp(mulRe, 'g')) || []).map((mul) => doMul(mul))).reduce((a, b) => a + b);
