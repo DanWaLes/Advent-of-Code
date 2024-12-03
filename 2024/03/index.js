@@ -38,13 +38,13 @@
 		}
 
 		let i = 0;
-		let canMul = true
+		let canMul = true;
 		let ans = 0;
 
 		while (true) {
-			const mulFn = search(input, mulRe, i);
 			const doFn = search(input, /do\(\)/, i);
 			const dontFn = search(input, /don't\(\)/, i);
+			const mulFn = search(input, mulRe, i);
 			const min = [doFn, dontFn, mulFn].filter((a, b) => a.index > -1).sort((a, b) => a.index - b.index)[0];
 
 			if (mulFn.index === -1) {
