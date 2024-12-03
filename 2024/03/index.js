@@ -14,56 +14,31 @@
 	const partOneAns = ((input.match(new RegExp(mulRe, 'g')) || []).map((mul) => doMul(mul))).reduce((a, b) => a + b);
 	const partTwoAns = doPartTwo(input);
 
-	function search(str, regex, startIndex) {
-		startIndex = parseInt(startIndex);
-
-		if (startIndex < 0 || !isFinite(startIndex)) {
-			startIndex = 0;
-		}
-
-		str = str.substring(startIndex, str.length);
-
-		const i = str.search(regex);
-
-		if (i === -1) {
-			return {index: i, match: null};
-		}
-
-		return {index: startIndex + i, match: str.match(regex)};
-	}
-
 	function doPartTwo(input) {
 		if (usingExampleInput) {
 			input = `xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))`;
 		}
 
+		const doRe = /do\(\)/;
+		const dontRe = /don't\(\)/;
+		const re = new RegExp(`(?:${mulRe.source})|(?:${doRe.source})|(?:${dontRe.source})`, 'g');
 		let canMul = true;
-		let ans = 0;
 
-		for (let i = 0; ; ) {
-			const doFn = search(input, /do\(\)/, i);
-			const dontFn = search(input, /don't\(\)/, i);
-			const mulFn = search(input, mulRe, i);
-			const min = [doFn, dontFn, mulFn].filter((a, b) => a.index > -1).sort((a, b) => a.index - b.index)[0];
+		return input.match(re)
+			.map((match) => {
+				if (match.match(doRe)) {
+					canMul = true;
+				}
+				else if (match.match(dontRe)) {
+					canMul = false;
+				}
+				else if (canMul && match.match(mulRe)) {
+					return doMul(match);
+				}
 
-			if (mulFn.index === -1) {
-				break;
-			}
-
-			if (min === dontFn) {
-				canMul = false;
-			}
-			else if (min === doFn) {
-				canMul = true;
-			}
-			else if (canMul && min === mulFn) {
-				ans += doMul(mulFn.match[0]);
-			}
-
-			i = (min.index + min.match[0].length);
-		}
-
-		return ans;
+				return 0;
+			})
+			.reduce((a, b) => a + b);
 	}
 
 	end(partOneAns, 161);
