@@ -26,14 +26,15 @@
 
 		return input.match(re)
 			.map((match) => {
+				if (canMul && match.match(mulRe)) {
+					return doMul(match);
+				}
+
 				if (match.match(doRe)) {
 					canMul = true;
 				}
 				else if (match.match(dontRe)) {
 					canMul = false;
-				}
-				else if (canMul && match.match(mulRe)) {
-					return doMul(match);
 				}
 
 				return 0;
