@@ -89,7 +89,6 @@
 	}
 
 	function doPartTwo() {
-		const word = 'MAS';
 		let xMasCount = 0;
 
 		for (let i = 1; i < chars.length - 1; i++) {
