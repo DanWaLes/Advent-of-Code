@@ -24,21 +24,6 @@
 		return chars[i][j] === word[charNum];
 	}
 
-	function hasWordChar2(word, chars, i, j) {
-		let found = false;
-
-		for (let c of chars) {
-			found = hasWordChar(word, word.indexOf(c), i, j);
-
-			if (found) {
-				break;
-			}
-		}
-
-		return found;
-	}
-
-
 	function searchForWord(word, onWordFound) {
 		function wordFound(word, i, j, changeInI, changeInJ, onWordFound) {
 			onWordFound(word, i, j, changeInI, changeInJ);
@@ -108,16 +93,16 @@
 		let xMasCount = 0;
 
 		for (let i = 1; i < chars.length - 1; i++) {
-			for (let j = 1; j < chars.length - 1; j++) {
+			for (let j = 1; j < chars[i].length - 1; j++) {
 				if (chars[i][j] !== 'A') {
 					continue;
 				}
 
 				if (!(
-					hasWordChar2(word, 'MS', i - 1, j - 1) &&
-					hasWordChar2(word, 'MS', i - 1, j + 1) &&
-					hasWordChar2(word, 'MS', i + 1, j - 1) &&
-					hasWordChar2(word, 'MS', i + 1, j + 1)
+					['M', 'S'].includes(chars[i - 1][j - 1]) &&
+					['M', 'S'].includes(chars[i - 1][j + 1]) &&
+					['M', 'S'].includes(chars[i + 1][j - 1]) &&
+					['M', 'S'].includes(chars[i + 1][j + 1])
 				)) {
 					continue;
 				}
