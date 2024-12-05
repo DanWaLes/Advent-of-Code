@@ -1,7 +1,7 @@
 (async () => {
 	const fs = require('fs/promises');
 
-	const usingExampleInput = true;
+	const usingExampleInput = false;
 	const inputFileName = (usingExampleInput ? 'example_' : '') + 'input.txt';
 	const input = await fs.open(inputFileName);
 
@@ -42,8 +42,7 @@
 				for (const rulePageNum of rules[pageNum]) {
 					for (let j = 0; j < i; j++) {
 						if (update[j] === rulePageNum) {
-							//  console.log('invalid')
-							return false;
+							return {i: i, j: j};
 						}
 					}
 				}
@@ -53,8 +52,13 @@
 		return true;
 	}
 
-	function fixUpdate(update) {
-		// TODO
+	function fixUpdate(update, err) {
+		while (err !== true) {
+			update.splice(err.i + 1, 0, update[err.j]);
+			update.splice(err.j, 1);
+			err = isValidUpdate(update);
+		}
+
 		return update;
 	}
 
@@ -62,7 +66,7 @@
 		let total = 0;
 
 		for (const update of updates) {
-			if (isValidUpdate(update)) {
+			if (isValidUpdate(update) === true) {
 				total += update[Math.floor(update.length / 2)];
 			}
 		}
@@ -74,10 +78,10 @@
 		let total = 0;
 
 		for (const update of updates) {
-			if (!isValidUpdate(update)) {
-				const fixedUpdate = fixUpdate(update);
+			const err = isValidUpdate(update);
 
-				total += fixedUpdate[Math.floor(update.length / 2)];
+			if (typeof err === 'object') {
+				total += fixUpdate(update, err)[Math.floor(update.length / 2)];
 			}
 		}
 
