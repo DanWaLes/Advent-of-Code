@@ -11,22 +11,23 @@
 		const numbers = line.match(/\d+/g).map((number) => parseInt(number));
 		const testValue = numbers.shift(0);
 
-		 processLine(testValue, numbers);
+		processLine(testValue, numbers);
 	}
 
 	function processLine(testValue, numbers) {
-		results.partOne += doPartOneLine(testValue, numbers);
-		results.partTwo += doPartTwoLine(testValue, numbers);
+		results.partOne += main(testValue, numbers, ['+', '*']);
+		results.partTwo += main(testValue, numbers, ['+', '*', '||']);
 	}
 
-	function doPartOneLine(testValue, numbers) {
+	function main(testValue, numbers, operators) {
 		// console.log('\n');
 		const queue = [];
 		const uniqueValidTestValues = {};
 
 		// accumulator, numberIndex, op
-		queue.push([0, 0, '+']);
-		queue.push([0, 0, '*']);
+		operators.forEach((op) => {
+			queue.push([0, 0, op]);
+		});
 
 		// console.log('testValue', testValue);
 		// console.log('numbers', numbers);
@@ -52,6 +53,10 @@
 					item[0] = operandOne * operandTwo;
 					break;
 				}
+				case '||': {
+					item[0] = Number(operandOne + '' + operandTwo);// incorrect
+					break;
+				}
 				default: {
 					throw new Error('unexpected operation: ' + op);
 				}
@@ -74,8 +79,9 @@
 
 			if (item[1] < numbers.length - 1) {
 				// console.log('trying next');
-				queue.push([item[0], item[1], '+']);
-				queue.push([item[0], item[1], '*']);
+				operators.forEach((op) => {
+					queue.push([item[0], item[1], op]);
+				});
 			}
 		}
 
@@ -86,10 +92,6 @@
 		});
 
 		return sum;
-	}
-
-	function doPartTwoLine(testValue, numbers) {
-		return 0;
 	}
 
 	end(results.partOne, 3749);
