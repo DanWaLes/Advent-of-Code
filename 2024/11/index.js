@@ -43,12 +43,7 @@
 
 			for (const [num, count] of Object.entries(stones)) {
 				applyStoneRule(parseInt(num)).forEach((stone) => {
-					if (newStones[stone]) {
-						newStones[stone] += count;
-					}
-					else {
-						newStones[stone] = count;
-					}
+					newStones[stone] = (newStones[stone] || 0) + count;
 				});
 			}
 
