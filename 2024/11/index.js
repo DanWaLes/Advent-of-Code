@@ -1,7 +1,7 @@
 (async () => {
 	const fs = require('fs/promises');
 
-	const usingExampleInput = true;
+	const usingExampleInput = false;
 	const inputFileName = (usingExampleInput ? 'example_' : '') + 'input.txt';
 	const input = await fs.readFile(inputFileName, {encoding: 'utf8'});
 	const stones = input.trim().split(/\s+/g).map((n) => parseInt(n));
@@ -15,9 +15,10 @@
 		}
 
 		const stoneStr = '' + stone;
-		const midpoint = stoneStr.length / 2;
 
 		if (stoneStr.length % 2 === 0) {
+			const midpoint = stoneStr.length / 2;
+
 			return [parseInt(stoneStr.substring(0, midpoint)), parseInt(stoneStr.substring(midpoint, stoneStr.length))];
 		}
 
@@ -25,31 +26,34 @@
 	}
 
 	function main(MAX_BLINKS) {
-		const queue = [stones];
-		let numBlinks = 0;
-		let stonesAfterXBlinks;
+		const start = new Date().getTime(); 
+		let numStones = stones.length;
 
-		while (queue.length > 0) {
-			const prevStones = queue.pop();
-			const newStones = [];
-
-			for (const stone of prevStones) {
-				applyStoneRule(stone).forEach((newStone) => {
-					newStones.push(newStone);
-				});
+		function m(stone, numBlinks) {
+			if (!(numBlinks < MAX_BLINKS)) {
+				return;
 			}
 
-			numBlinks++;
+			const replacementStones = applyStoneRule(stone);
 
-			if (numBlinks < MAX_BLINKS) {
-				queue.push(newStones);
+			if (replacementStones.length > 1) {
+				numStones++;
 			}
-			else {
-				stonesAfterXBlinks = newStones;
-			}
+
+			replacementStones.forEach((newStone) => {
+				m(newStone, numBlinks + 1);
+			});
 		}
 
-		return stonesAfterXBlinks.length;
+		for (const stone of stones) {
+			m(stone, 0);
+		}
+
+		const end = new Date().getTime();
+		const diff = end - start;
+		console.log('took ' + diff + 'ms');
+
+		return numStones;
 	}
 
 	function doPartOne() {
