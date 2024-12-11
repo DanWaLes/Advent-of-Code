@@ -9,12 +9,10 @@
 	end(doPartOne(), 55312);
 	end(doPartTwo());// does not say answer for part 2 example
 
-	function applyStoneRule(stone) {
-		if (stone === 0) {
+	function applyStoneRule(stoneStr) {
+		if (stoneStr === '0') {
 			return [1];
 		}
-
-		const stoneStr = '' + stone;
 
 		if (stoneStr.length % 2 === 0) {
 			const midpoint = stoneStr.length / 2;
@@ -22,7 +20,7 @@
 			return [parseInt(stoneStr.substring(0, midpoint)), parseInt(stoneStr.substring(midpoint, stoneStr.length))];
 		}
 
-		return [stone * 2024];
+		return [parseInt(stoneStr) * 2024];
 	}
 
 	function main(MAX_BLINKS) {
@@ -42,7 +40,7 @@
 			const newStones = {};
 
 			for (const [num, count] of Object.entries(stones)) {
-				applyStoneRule(parseInt(num)).forEach((stone) => {
+				applyStoneRule(num).forEach((stone) => {
 					newStones[stone] = (newStones[stone] || 0) + count;
 				});
 			}
