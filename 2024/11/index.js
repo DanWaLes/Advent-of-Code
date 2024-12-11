@@ -4,10 +4,10 @@
 	const usingExampleInput = true;
 	const inputFileName = (usingExampleInput ? 'example_' : '') + 'input.txt';
 	const input = await fs.readFile(inputFileName, {encoding: 'utf8'});
-	const stones = input.trim().split(/\s+/g).map((n) => parseInt(n));
+	const initialStones = input.trim().split(/\s+/g).map((n) => parseInt(n));
 
 	end(doPartOne(), 55312);
-	end(doPartTwo(), NaN);// does not say answer for part 2 example
+	end(doPartTwo());// does not say answer for part 2 example
 
 	function applyStoneRule(stone) {
 		if (stone === 0) {
@@ -26,35 +26,36 @@
 	}
 
 	function main(MAX_BLINKS) {
-		const start = new Date().getTime(); 
-		let numStones = stones.length;
+		// adapted from https://github.com/BigBear0812/AdventOfCode/blob/master/2024/Day11.js
 
-		function m(stone, numBlinks) {
-			if (!(numBlinks < MAX_BLINKS)) {
-				return;
+		let stones = {};
+
+		for (const stone of initialStones) {
+			if (!stones[stone]) {
+				stones[stone] = 0;
 			}
 
-			const replacementStones = applyStoneRule(stone);
+			stones[stone]++;
+		}
 
-			if (replacementStones.length > 1) {
-				numStones++;
+		for (let i = 0; i < MAX_BLINKS; i++) {
+			const newStones = {};
+
+			for (const [num, count] of Object.entries(stones)) {
+				applyStoneRule(parseInt(num)).forEach((stone) => {
+					if (newStones[stone]) {
+						newStones[stone] += count;
+					}
+					else {
+						newStones[stone] = count;
+					}
+				});
 			}
 
-			replacementStones.forEach((newStone) => {
-				m(newStone, numBlinks + 1);
-			});
+			stones = newStones;
 		}
 
-		for (const stone of stones) {
-			m(stone, 0);
-		}
-
-		const end = new Date().getTime();
-		const diff = end - start;
-
-		console.log('took ' + diff + 'ms');
-
-		return numStones;
+		return Object.values(stones).reduce((a, b) => a + b);
 	}
 
 	function doPartOne() {
