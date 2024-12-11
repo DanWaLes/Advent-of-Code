@@ -51,6 +51,7 @@
 
 		const end = new Date().getTime();
 		const diff = end - start;
+
 		console.log('took ' + diff + 'ms');
 
 		return numStones;
