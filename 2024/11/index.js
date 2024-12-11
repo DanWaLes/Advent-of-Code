@@ -1,7 +1,7 @@
 (async () => {
 	const fs = require('fs/promises');
 
-	const usingExampleInput = false;
+	const usingExampleInput = true;
 	const inputFileName = (usingExampleInput ? 'example_' : '') + 'input.txt';
 	const input = await fs.readFile(inputFileName, {encoding: 'utf8'});
 	const stones = input.trim().split(/\s+/g).map((n) => parseInt(n));
